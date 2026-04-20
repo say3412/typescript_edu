@@ -1,13 +1,11 @@
-const list: Element | null = document.querySelector(".list");
-
 interface Todos {
   todos: Todo[];
 }
 
 interface Todo {
   id: number;
-  text: string | null;
-  completed: boolean | undefined;
+  text: string;
+  completed: boolean;
 }
 
 class TodoApp {
@@ -29,6 +27,8 @@ class TodoApp {
     this.todos.forEach((todo: Todo) => {
       let completedVal: string = todo.completed ? "✅" : "☑️";
       const val: string = `${completedVal}  ${todo.id}  ${todo.text}`;
+
+      const list: Element | null = document.querySelector(".list");
       const li = document.createElement("li");
       li.textContent = val;
 
@@ -42,18 +42,15 @@ class TodoApp {
   // id로 조회
   findTodoById(id: number) {
     const todo = this.todos.find((t: Todo) => t.id === id);
+    const list: Element | null = document.querySelector(".list");
 
-    if (!todo) return;
+    if (!todo || !list) return;
 
     let completedVal: string = todo.completed ? "✅" : "☑️";
-    const val = `${completedVal}  ${todo.id}  ${todo.text}`;
+    const val: string = `${completedVal}  ${todo.id}  ${todo.text}`;
+
     const li = document.createElement("li");
     li.textContent = val;
-
-    if (!list) {
-      return;
-    }
-
     list.appendChild(li);
   }
 
@@ -64,62 +61,97 @@ class TodoApp {
 
   // 완료
   toggleTodo(id: number) {
-    const todo: Todo = this.todos.find((t) => t.id === id);
+    const todo = this.todos.find((t) => t.id === id);
+    if (!todo) {
+      return;
+    }
     todo.completed = !todo.completed;
   }
 }
 
-const app = new TodoApp();
-// 초기 데이터 (테스트용)
-app.addTodo("공부하기");
-app.addTodo("운동하기");
-app.showTodo();
-
-const textInput = document.getElementById("text");
-const uidInput = document.getElementById("uid");
-
-document.getElementById("addBtn").addEventListener("click", () => {
-  const text = textInput.value;
-  if (!text) return;
-
-  app.addTodo(text);
-
-  list.innerHTML = "";
-  textInput.value = "";
+window.onload = function () {
+  const app = new TodoApp();
+  // 초기 데이터 (테스트용)
+  app.addTodo("공부하기");
+  app.addTodo("운동하기");
   app.showTodo();
-});
 
-document.getElementById("refresh").addEventListener("click", () => {
-  uidInput.value = "";
-  list.innerHTML = "";
-  app.showTodo();
-});
+  const addBtn = document.getElementById("addBtn");
+  if (!addBtn) return;
+  addBtn.addEventListener("click", () => {
+    const textInput = document.getElementById("text") as HTMLInputElement;
+    const list: Element | null = document.querySelector(".list");
 
-document.getElementById("rmBtn").addEventListener("click", () => {
-  const id = Number(uidInput.value);
-  if (!id) return;
+    if (!textInput || !list) {
+      return;
+    }
 
-  uidInput.value = "";
-  list.innerHTML = "";
-  app.removeTodo(id);
-  app.showTodo();
-});
+    const text: string = textInput.value;
+    if (!text) return;
 
-document.getElementById("findByIdBtn").addEventListener("click", () => {
-  const id = Number(uidInput.value);
-  if (!id) return;
+    app.addTodo(text);
 
-  uidInput.value = "";
-  list.innerHTML = "";
-  app.findTodoById(id);
-});
+    list.innerHTML = "";
+    textInput.value = "";
+    app.showTodo();
+  });
 
-document.getElementById("statusBtn").addEventListener("click", () => {
-  const id = Number(uidInput.value);
-  if (!id) return;
+  const refresh = document.getElementById("refresh");
+  if (!refresh) return;
+  refresh.addEventListener("click", () => {
+    const uidInput = document.getElementById("uid") as HTMLInputElement;
+    const list: Element | null = document.querySelector(".list");
 
-  uidInput.value = "";
-  list.innerHTML = "";
-  app.toggleTodo(id);
-  app.showTodo();
-});
+    if (!list) return;
+
+    uidInput.value = "";
+    list.innerHTML = "";
+    app.showTodo();
+  });
+
+  const rmBtn = document.getElementById("rmBtn");
+  if (!rmBtn) return;
+  rmBtn.addEventListener("click", () => {
+    const uidInput = document.getElementById("uid") as HTMLInputElement;
+    if (!uidInput) return;
+
+    const id: number = Number(uidInput.value);
+    const list: Element | null = document.querySelector(".list");
+
+    if (!id || !list) return;
+
+    uidInput.value = "";
+    list.innerHTML = "";
+    app.removeTodo(id);
+    app.showTodo();
+  });
+
+  const findByIdBtn = document.getElementById("findByIdBtn");
+  if (!findByIdBtn) return;
+  findByIdBtn.addEventListener("click", () => {
+    const uidInput = document.getElementById("uid") as HTMLInputElement;
+    const id = Number(uidInput.value);
+    const list: Element | null = document.querySelector(".list");
+    
+    if (!id || !list) return;
+
+    uidInput.value = "";
+    list.innerHTML = "";
+    app.findTodoById(id);
+  });
+
+  const statusBtn = document.getElementById("statusBtn");
+  if (!statusBtn) return;
+  statusBtn.addEventListener("click", () => {
+    const uidInput = document.getElementById("uid") as HTMLInputElement;
+    const id = Number(uidInput.value);
+    const list: Element | null = document.querySelector(".list");
+
+    if (!id || !list) return;
+
+    uidInput.value = "";
+    list.innerHTML = "";
+    app.toggleTodo(id);
+    app.showTodo();
+  });
+};
